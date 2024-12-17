@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\PlaylistSubscriptionRepository;
+use App\Repository\PlaylistMediaRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PlaylistSubscriptionRepository::class)]
-class PlaylistSubscription
+#[ORM\Entity(repositoryClass: PlaylistMediaRepository::class)]
+class PlaylistMedia
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -14,41 +14,29 @@ class PlaylistSubscription
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $subscribedAt = null;
+    private ?\DateTimeImmutable $addedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'playlistSubscriptions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $subscriber = null;
-
-    #[ORM\ManyToOne(inversedBy: 'playlistSubscriptions')]
+    #[ORM\ManyToOne(inversedBy: 'playlistMedia')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Playlist $playlist = null;
+
+    #[ORM\ManyToOne(inversedBy: 'playlistMedia')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Media $media = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getSubscribedAt(): ?\DateTimeImmutable
+    public function getAddedAt(): ?\DateTimeImmutable
     {
-        return $this->subscribedAt;
+        return $this->addedAt;
     }
 
-    public function setSubscribedAt(\DateTimeImmutable $subscribedAt): static
+    public function setAddedAt(\DateTimeImmutable $addedAt): static
     {
-        $this->subscribedAt = $subscribedAt;
-
-        return $this;
-    }
-
-    public function getSubscriber(): ?User
-    {
-        return $this->subscriber;
-    }
-
-    public function setSubscriber(?User $subscriber): static
-    {
-        $this->subscriber = $subscriber;
+        $this->addedAt = $addedAt;
 
         return $this;
     }
@@ -61,6 +49,18 @@ class PlaylistSubscription
     public function setPlaylist(?Playlist $playlist): static
     {
         $this->playlist = $playlist;
+
+        return $this;
+    }
+
+    public function getMedia(): ?Media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(?Media $media): static
+    {
+        $this->media = $media;
 
         return $this;
     }

@@ -1,56 +1,93 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Entity;
 
-use App\Repository\SerieRepository;
+use App\Repository\SeasonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Entity;
 
-#[Entity(repositoryClass: SerieRepository::class)]
-class Serie extends Media
+#[ORM\Entity(repositoryClass: SeasonRepository::class)]
+class Season
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $number = null;
+
     /**
-     * @var Collection<int, Season>
+     * @var Collection<int, Episode>
      */
-    #[ORM\OneToMany(targetEntity: Season::class, mappedBy: 'serie')]
-    private Collection $seasons;
+    #[ORM\OneToMany(targetEntity: Episode::class, mappedBy: 'season')]
+    private Collection $episodes;
+
+    #[ORM\ManyToOne(inversedBy: 'seasons')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Serie $serie = null;
 
     public function __construct()
     {
-        parent::__construct();
-        $this->seasons = new ArrayCollection();
+        $this->episodes = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getNumber(): ?string
+    {
+        return $this->number;
+    }
+
+    public function setNumber(string $number): static
+    {
+        $this->number = $number;
+
+        return $this;
     }
 
     /**
-     * @return Collection<int, Season>
+     * @return Collection<int, Episode>
      */
-    public function getSeasons(): Collection
+    public function getEpisodes(): Collection
     {
-        return $this->seasons;
+        return $this->episodes;
     }
 
-    public function addSeason(Season $season): static
+    public function addEpisode(Episode $episode): static
     {
-        if (!$this->seasons->contains($season)) {
-            $this->seasons->add($season);
-            $season->setSerie($this);
+        if (!$this->episodes->contains($episode)) {
+            $this->episodes->add($episode);
+            $episode->setSeason($this);
         }
 
         return $this;
     }
 
-    public function removeSeason(Season $season): static
+    public function removeEpisode(Episode $episode): static
     {
-        if ($this->seasons->removeElement($season)) {
+        if ($this->episodes->removeElement($episode)) {
             // set the owning side to null (unless already changed)
-            if ($season->getSerie() === $this) {
-                $season->setSerie(null);
+            if ($episode->getSeason() === $this) {
+                $episode->setSeason(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSerie(): ?Serie
+    {
+        return $this->serie;
+    }
+
+    public function setSerie(?Serie $serie): static
+    {
+        $this->serie = $serie;
 
         return $this;
     }
